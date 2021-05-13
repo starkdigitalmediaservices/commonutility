@@ -17,6 +17,11 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/starkdigitalmediaservices/commonutility.git"
+  },
+  "author": "stark",
   "eslintConfig": {
     "extends": [
       "react-app",
