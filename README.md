@@ -8,8 +8,6 @@ Create customizable datatable
 
 ## Installation
 
-Install custom-bottom-tab-bar
-
 ```
 npm i stark-custom-datatable
 ```
