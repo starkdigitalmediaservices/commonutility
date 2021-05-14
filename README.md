@@ -97,7 +97,21 @@ render() {
 }
 
 ```
+### column config
+* id (required:number)
+* labal (required:String)
+* roleAccess (optional:Array) - if empty then this column will be visible to all user role. if roles are given then it will be column visible to that specifed roles
+* isDisplay (optional:Boolean) - hide or show column
+* columnRender (optional:callback) - to override column structure of specific column
+* render (optional:callback) - to override data structure of specific column
+ 
+### bulkActions config
+* actionTitle (required:String) - to display in action dropdown
+* actionCallback (required:callback) - callback when action trigger which return selected row id from table
 
+### paginationProps config
+* totalCount (required:Number) - total count of record for pagination
+* itemsPerPage (required:Number) - to dispay no of record per page
 
 ### dependencies package
 
