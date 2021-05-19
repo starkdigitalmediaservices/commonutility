@@ -76,8 +76,11 @@ render() {
         showPagination={true}
         // paginationProps (optional:Object) : to display page number based on this props
         paginationProps={{
-          totalCount: 5,
+          totalItems: 5,
           itemsPerPage: 5,
+          onPageChange:{(changedPage) => {
+            console.log(changedPage);
+          }}
         }}
         // selectedRowItems (optional:array) : to show selected row in table
         selectedRowItems={[4]}
@@ -108,8 +111,9 @@ render() {
 * actionCallback (required:callback) - callback when action trigger which return selected row id from table
 
 ### paginationProps config
-* totalCount (required:Number) - total count of record for pagination
+* totalItems (required:Number) - total count of record for pagination
 * itemsPerPage (required:Number) - to dispay no of record per page
+* onPageChange (optional: callback) - to get current page selected
 
 ### dependencies package
 

@@ -271,5 +271,5 @@ function SimpleTable(props) {
     rowData: row,
     colIdx: columnIndex,
     rowIdx: rowIndex
-  }))))))))), /*#__PURE__*/_react.default.createElement(EmptyRecordRender, null)), showPagination && paginationProps && paginationProps.itemsPerPage < paginationProps.totalCount && /*#__PURE__*/_react.default.createElement(_pagination.default, paginationProps));
+  }))))))))), /*#__PURE__*/_react.default.createElement(EmptyRecordRender, null)), showPagination && paginationProps && paginationProps.itemsPerPage < paginationProps.totalItems && /*#__PURE__*/_react.default.createElement(_pagination.default, paginationProps));
 }

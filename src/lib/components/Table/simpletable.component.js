@@ -297,7 +297,7 @@ export default function SimpleTable(props) {
       </div>
       {showPagination &&
         paginationProps &&
-        paginationProps.itemsPerPage < paginationProps.totalCount && (
+        paginationProps.itemsPerPage < paginationProps.totalItems && (
           <Pagination {...paginationProps} />
         )}
     </>

@@ -40,8 +40,11 @@ function App() {
             showCheckbox
             showPagination
             paginationProps={{
-              totalCount: 5,
-              itemsPerPage: 5,
+              totalItems: 10,
+              itemsPerPage: 4,
+              onPageChange:(page)=>{
+               console.log(page) 
+              }
             }}
             selectedRowItems={[4]}
             onSelectRowsIndexes={(indexes) => {
