@@ -220,7 +220,18 @@ function SimpleTable(props) {
       }
 
       if (!selectedRowIndexes.length || !selectedAction) return;
-      bulkActions[selectedAction].actionCallback(selectedRowIndexes, setAllSelected(false), setSelectedRows([]), setSelectedRowIndexes([]), setSelectedAction(''));
+      (0, _sweetalert.default)({
+        title: "Are you sure that you want to ".concat(bulkActions[selectedAction].actionTitle.toLowerCase(), "?"),
+        icon: "warning",
+        dangerMode: true,
+        buttons: true,
+        closeOnClickOutside: false,
+        allowOutsideClick: false
+      }).then(willAction => {
+        if (willAction) {
+          bulkActions[selectedAction].actionCallback(selectedRowIndexes, setAllSelected(false), setSelectedRows([]), setSelectedRowIndexes([]), setSelectedAction(''));
+        }
+      });
     }
   }, bulkActionsLabel))), /*#__PURE__*/_react.default.createElement("table", {
     className: "table ".concat(tableClass)
