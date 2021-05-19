@@ -214,13 +214,26 @@ export default function SimpleTable(props) {
                     });
                   }
                   if (!selectedRowIndexes.length || !selectedAction) return;
-                  bulkActions[selectedAction].actionCallback(
-                    selectedRowIndexes,
-                    setAllSelected(false),
-                    setSelectedRows([]),
-                    setSelectedRowIndexes([]),
-                    setSelectedAction('')
-                  );
+
+                  swal({
+                    title: `Are you sure that you want to ${bulkActions[selectedAction].actionTitle.toLowerCase()}?`,
+                    icon: "warning",
+                    dangerMode: true,
+                    buttons: true,
+                    closeOnClickOutside: false,
+                    allowOutsideClick: false,
+                  })
+                    .then(willAction => {
+                      if (willAction) {
+                        bulkActions[selectedAction].actionCallback(
+                          selectedRowIndexes,
+                          setAllSelected(false),
+                          setSelectedRows([]),
+                          setSelectedRowIndexes([]),
+                          setSelectedAction('')
+                        );
+                      }
+                    });
                 }}
               >
                 {bulkActionsLabel}
