@@ -211,9 +211,9 @@ function SimpleTable(props) {
       if (!selectedRowIndexes.length || !selectedAction) {
         (0, _sweetalert.default)({
           title: selectedRowIndexes.length && !selectedAction ? 'Please select atleast one action?' : 'Please select atleast one record?',
-          icon: 'warning',
+          icon: 'error',
           dangerMode: true,
-          buttons: true,
+          button: 'OK',
           closeOnClickOutside: false,
           allowOutsideClick: false
         });
@@ -224,7 +224,21 @@ function SimpleTable(props) {
         title: "Are you sure that you want to ".concat(bulkActions[selectedAction].actionTitle.toLowerCase(), "?"),
         icon: "warning",
         dangerMode: true,
-        buttons: true,
+        buttons: {
+          cancel: {
+            text: "Cancel",
+            value: false,
+            visible: true,
+            closeModal: true
+          },
+          confirm: {
+            text: "Procced",
+            value: true,
+            visible: true,
+            className: "",
+            closeModal: true
+          }
+        },
         closeOnClickOutside: false,
         allowOutsideClick: false
       }).then(willAction => {
