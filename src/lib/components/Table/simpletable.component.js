@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import swal from 'sweetalert';
 import {
@@ -178,6 +178,17 @@ export default function SimpleTable(props) {
     }
   }
 
+  useEffect(() => {
+    setSelectedRows(  rows.filter((row) => {
+         return selectedRowItems.includes(Number(row.id));
+    })
+  )
+  }, [rows])
+
+  useEffect(() => {
+    setSelectedRowIndexes([...selectedRowItems])
+  }, [selectedRowItems])
+
   return (
     <>
       <NotificationContainer />
@@ -289,7 +300,7 @@ export default function SimpleTable(props) {
           )}
           <tbody>
             {rows.map((row, rowIndex) => (
-              <tr key={`row-${rowIndex}`}>
+              <tr key={`row-${rowIndex}`} className={`trow ${row.rowClass || ''}`}>
                 {showCheckbox && (
                   <th>
                     <div className="form-check">
@@ -310,7 +321,7 @@ export default function SimpleTable(props) {
                 {allColumnIds.map((rowDataId, columnIndex) => (
                   <UserRestrictions permittedUsers={columns[columnIndex].roleAccess || []} roleId={role || ''}>
                     <DisplayViewComponent display={columns[columnIndex].isDisplay !== undefined ? columns[columnIndex].isDisplay : true}>
-                      <td>
+                      <td className={`tcol ${columns[columnIndex].classes || ''}`}>
                         <RenderColumnData key={rowDataId} columnData={columns[columnIndex]} rowData={row} colIdx={columnIndex} rowIdx={rowIndex} />
                       </td>
                     </DisplayViewComponent>

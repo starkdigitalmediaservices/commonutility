@@ -187,6 +187,14 @@ function SimpleTable(props) {
     }
   };
 
+  (0, _react.useEffect)(() => {
+    setSelectedRows(rows.filter(row => {
+      return selectedRowItems.includes(Number(row.id));
+    }));
+  }, [rows]);
+  (0, _react.useEffect)(() => {
+    setSelectedRowIndexes([...selectedRowItems]);
+  }, [selectedRowItems]);
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactNotifications.NotificationContainer, null), /*#__PURE__*/_react.default.createElement("div", {
     className: "table-projects table-responsive ".concat(tableContainerClass)
   }, bulkActions && bulkActions.length > 0 && rows.length > 0 && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
@@ -272,7 +280,8 @@ function SimpleTable(props) {
     columnData: column,
     key: columnIndex
   }))))))), /*#__PURE__*/_react.default.createElement("tbody", null, rows.map((row, rowIndex) => /*#__PURE__*/_react.default.createElement("tr", {
-    key: "row-".concat(rowIndex)
+    key: "row-".concat(rowIndex),
+    className: "trow ".concat(row.rowClass || '')
   }, showCheckbox && /*#__PURE__*/_react.default.createElement("th", null, /*#__PURE__*/_react.default.createElement("div", {
     className: "form-check"
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
@@ -290,7 +299,9 @@ function SimpleTable(props) {
     roleId: role || ''
   }, /*#__PURE__*/_react.default.createElement(DisplayViewComponent, {
     display: columns[columnIndex].isDisplay !== undefined ? columns[columnIndex].isDisplay : true
-  }, /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(RenderColumnData, {
+  }, /*#__PURE__*/_react.default.createElement("td", {
+    className: "tcol ".concat(columns[columnIndex].classes || '')
+  }, /*#__PURE__*/_react.default.createElement(RenderColumnData, {
     key: rowDataId,
     columnData: columns[columnIndex],
     rowData: row,

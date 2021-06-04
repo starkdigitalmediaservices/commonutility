@@ -31,7 +31,7 @@ import CustomTable from "stark-custom-datatable";
 // some code
 
 const rowData = [
-    { id: 1, name: 'Sample name', email: 'john.doe@example.com' },
+    { id: 1, name: 'Sample name', email: 'john.doe@example.com', rowClass:'bgred' },
     { id: 2, name: 'Sample name', email: 'john.doe@example.com' },
     { id: 3, name: 'Sample name', email: 'john.doe@example.com' },
     { id: 4, name: 'Sample name', email: 'john.doe@example.com' },
@@ -49,7 +49,7 @@ render() {
         columns={[
           { id: 'id', label: 'Id', roleAccess: [1], isDisplay: true, columnRender: (col => (<span style={{ fontWeight: 'bold' }}>{col.label}</span>)), render: (row) => { return (<b>{row.name}</b>) } },
           { id: 'name', label: 'Name', roleAccess: [1] },
-          { id: 'email', label: 'Email', roleAccess: [3] },
+          { id: 'email', label: 'Email', roleAccess: [3], classes:'bgGray' },
         ]}
         // rows (required:array) : display row data of column
         rows={rowData}
@@ -101,6 +101,7 @@ render() {
 ### column config
 * id (required:number)
 * labal (required:String)
+* classes (optional:String)
 * roleAccess (optional:Array) - if empty then this column will be visible to all user role. if roles are given then it will be column visible to that specifed roles
 * isDisplay (optional:Boolean) - hide or show column
 * columnRender (optional:callback) - to override column structure of specific column

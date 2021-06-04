@@ -17,11 +17,11 @@ function App() {
             role={1}
             columns={[
               { id: 'id', label: 'Id', roleAccess: [1], isDisplay: true, columnRender: (col => (<span style={{ fontWeight: 'bold' }}>{col.label}</span>)), render: (row) => { return (<b>{row.name}</b>) } },
-              { id: 'name', label: 'Name', roleAccess: [1] },
+              { id: 'name', label: 'Name', roleAccess: [1] , classes:'bgGray'},
               { id: 'email', label: 'Email', roleAccess: [3] },
             ]}
             rows={[
-              { id: 1, name: 'Sample name', email: 'john.doe@example.com' },
+              { id: 1, name: 'Sample name', email: 'john.doe@example.com', rowClass:'bgred' },
               { id: 2, name: 'Sample name', email: 'john.doe@example.com' },
               { id: 3, name: 'Sample name', email: 'john.doe@example.com' },
               { id: 4, name: 'Sample name', email: 'john.doe@example.com' },
