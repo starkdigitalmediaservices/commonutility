@@ -39,6 +39,7 @@ function App() {
             ]}
             showCheckbox
             showPagination
+            popupMessage = "Are you sure, you want to {key} this record?"
             paginationProps={{
               totalItems: 10,
               itemsPerPage: 4,

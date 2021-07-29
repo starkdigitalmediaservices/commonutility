@@ -22,7 +22,8 @@ const defaults = {
   selectedRowItems: [],
   role: '',
   emptyMessage: 'No record found.',
-  bulkActionsLabel: 'Apply'
+  bulkActionsLabel: 'Apply',
+  popupMessage:'Are you sure that you want to {key}?'
 };
 
 // Columns structure
@@ -66,7 +67,8 @@ export default function SimpleTable(props) {
     selectedRowItems,
     role,
     emptyMessage,
-    bulkActionsLabel
+    bulkActionsLabel,
+    popupMessage
   } = {
     ...defaults,
     ...props,
@@ -225,9 +227,10 @@ export default function SimpleTable(props) {
                     });
                   }
                   if (!selectedRowIndexes.length || !selectedAction) return;
-
+                  let msg = popupMessage.replace('{key}',bulkActions[selectedAction].actionTitle.toLowerCase())
                   swal({
-                    title: `Are you sure that you want to ${bulkActions[selectedAction].actionTitle.toLowerCase()}?`,
+
+                    title: msg,
                     icon: "warning",
                     dangerMode: true,
                     buttons: {
@@ -238,7 +241,7 @@ export default function SimpleTable(props) {
                         closeModal: true
                       },
                       confirm: {
-                        text: "Procced",
+                        text: "Proceed",
                         value: true,
                         visible: true,
                         className: "",
