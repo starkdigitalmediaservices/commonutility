@@ -48,7 +48,7 @@ const defaults = {
 // role = {1} i.e single role id
 
 // Role based column based on datatable main role
-// roleAccess: [1] 
+// roleAccess: [1]
 // Add role access key to column to hide or show specific column based on role
 // Keep empty to show column to all user
 
@@ -217,8 +217,8 @@ export default function SimpleTable(props) {
                   if (!selectedRowIndexes.length || !selectedAction) {
                     swal({
                       title: selectedRowIndexes.length && !selectedAction
-                        ? 'Please select atleast one action?'
-                        : 'Please select atleast one record?',
+                        ? 'Please select atleast one action.'
+                        : 'Please select atleast one record.',
                       icon: 'error',
                       dangerMode: true,
                       button: 'OK',
