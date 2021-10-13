@@ -9,6 +9,8 @@ require("core-js/modules/web.dom-collections.iterator.js");
 
 require("core-js/modules/es.string.includes.js");
 
+require("core-js/modules/es.string.replace.js");
+
 var _react = _interopRequireWildcard(require("react"));
 
 var _reactBootstrap = require("react-bootstrap");
@@ -48,7 +50,8 @@ const defaults = {
   selectedRowItems: [],
   role: '',
   emptyMessage: 'No record found.',
-  bulkActionsLabel: 'Apply'
+  bulkActionsLabel: 'Apply',
+  popupMessage: 'Are you sure that you want to {key}?'
 }; // Columns structure
 // [{id: 'id', label: 'Id', roleAccess: [1], isDisplay: true, columnRender: (col => (<span style={{ fontWeight: 'bold' }}>{col.label}</span>)), render: (row) => { return (<b>{row.id}</b>) }},{id: 'name', label: 'Name'}{id: 'email', label: 'Email'}]
 // Rows structure
@@ -66,7 +69,7 @@ const defaults = {
 // Role based Datatable
 // role = {1} i.e single role id
 // Role based column based on datatable main role
-// roleAccess: [1] 
+// roleAccess: [1]
 // Add role access key to column to hide or show specific column based on role
 // Keep empty to show column to all user
 
@@ -85,7 +88,8 @@ function SimpleTable(props) {
     selectedRowItems,
     role,
     emptyMessage,
-    bulkActionsLabel
+    bulkActionsLabel,
+    popupMessage
   } = _objectSpread(_objectSpread({}, defaults), props);
 
   const [allSelected, setAllSelected] = (0, _react.useState)(false);
@@ -218,7 +222,7 @@ function SimpleTable(props) {
     onClick: () => {
       if (!selectedRowIndexes.length || !selectedAction) {
         (0, _sweetalert.default)({
-          title: selectedRowIndexes.length && !selectedAction ? 'Please select atleast one action?' : 'Please select atleast one record?',
+          title: selectedRowIndexes.length && !selectedAction ? 'Please select atleast one action.' : 'Please select atleast one record.',
           icon: 'error',
           dangerMode: true,
           button: 'OK',
@@ -228,8 +232,9 @@ function SimpleTable(props) {
       }
 
       if (!selectedRowIndexes.length || !selectedAction) return;
+      let msg = popupMessage.replace('{key}', bulkActions[selectedAction].actionTitle.toLowerCase());
       (0, _sweetalert.default)({
-        title: "Are you sure that you want to ".concat(bulkActions[selectedAction].actionTitle.toLowerCase(), "?"),
+        title: msg,
         icon: "warning",
         dangerMode: true,
         buttons: {
@@ -240,7 +245,7 @@ function SimpleTable(props) {
             closeModal: true
           },
           confirm: {
-            text: "Procced",
+            text: "Proceed",
             value: true,
             visible: true,
             className: "",
