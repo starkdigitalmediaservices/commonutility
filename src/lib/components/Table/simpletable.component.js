@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import {
   NotificationContainer
@@ -51,7 +51,7 @@ const defaults = {
 // Add role access key to column to hide or show specific column based on role
 // Keep empty to show column to all user
 
-export default function SimpleTable(props) {
+const SimpleTable = (props) => {
   const {
     columns,
     rows,
@@ -72,11 +72,12 @@ export default function SimpleTable(props) {
     ...defaults,
     ...props,
   };
+
   const [allSelected, setAllSelected] = useState(false);
   const [selectedAction, setSelectedAction] = useState('');
   const [selectedRows, setSelectedRows] = useState(
     rows.filter((row) => {
-      return selectedRowItems.includes(Number(row.id));
+      return selectedRowItems.includes(String(row.id));
     })
   );
   const [selectedRowIndexes, setSelectedRowIndexes] = useState([
@@ -84,21 +85,6 @@ export default function SimpleTable(props) {
   ]);
   const [allSelectedPages, setAllSelectedPages] = useState([]);
   const allColumnIds = columns.map((column) => column.id);
-
-  // const onSelectHead = (isChecked) => {
-  //   const selectedIndexes = [];
-  //   const selectedItems = rows.filter((row) => {
-  //     // eslint-disable-line
-  //     if (isChecked) selectedIndexes.push(Number(row.id));
-  //     return isChecked;
-  //   });
-  //   setSelectedRows([...selectedItems]);
-  //   setSelectedRowIndexes([...selectedIndexes]);
-  //   setAllSelected(isChecked);
-  //   if (onSelectRowsIndexes) {
-  //     onSelectRowsIndexes(selectedIndexes);
-  //   }
-  // };
 
   const onSelectHead = async (isChecked) => {
     let selectedIndexes = [...selectedRowIndexes];
@@ -133,26 +119,6 @@ export default function SimpleTable(props) {
       }
     }
   };
-
-  // const onSelectRow = (isChecked, rowIndex) => {
-  //   let selectedItems = [...selectedRows];
-  //   const selectedIndexes = [];
-  //   if (isChecked) {
-  //     selectedItems.push(rows[rowIndex]);
-  //   } else {
-  //     selectedItems = selectedItems.filter(j => Number(j.id) !== Number(rows[rowIndex].id));
-  //   }
-  //   const selectedCount = selectedItems.filter((item) => {
-  //     selectedIndexes.push(Number(item.id));
-  //     return item;
-  //   }).length;
-  //   setSelectedRows(selectedItems);
-  //   setAllSelected(selectedCount === rows.length);
-  //   setSelectedRowIndexes([...selectedIndexes]);
-  //   if (onSelectRowsIndexes) {
-  //     onSelectRowsIndexes(selectedIndexes);
-  //   }
-  // };
 
   const onSelectRow = async (isChecked, rowIndex) => {
     let selectedItems = [...selectedRows];
@@ -197,74 +163,48 @@ export default function SimpleTable(props) {
 
   const RenderColumnData = ({ rowData, columnData }) => {
     try {
-      const columnDisplay = columnData && columnData.render ? columnData.render(rowData) : rowData[columnData.id];
-      return (
-        <>
-          {columnDisplay}
-        </>
-      )
+      const columnDisplay =
+        columnData && columnData.render
+          ? columnData.render(rowData)
+          : rowData[columnData.id];
+      return <>{columnDisplay}</>;
     } catch (err) {
-      return (
-        <>
-          {rowData[columnData.id]}
-        </>
-      )
+      return <>{rowData[columnData.id]}</>;
     }
-
-  }
+  };
 
   const RenderColumn = ({ columnData }) => {
     try {
-      const columnDisplay = columnData && columnData.columnRender ? columnData.columnRender(columnData) : columnData.label;
-      return (
-        <>
-          {columnDisplay}
-        </>
-      )
+      const columnDisplay =
+        columnData && columnData.columnRender
+          ? columnData.columnRender(columnData)
+          : columnData.label;
+      return <>{columnDisplay}</>;
     } catch (err) {
-      return (
-        <>
-          {columnData.label}
-        </>
-      )
+      return <>{columnData.label}</>;
     }
-
-  }
+  };
 
   const DisplayViewComponent = ({ display, children }) => {
     return <>{display && <>{children}</>}</>;
-  }
+  };
 
   const EmptyRecordRender = () => {
     try {
       const { emptyRender } = props;
       if (rows.length > 0) return null;
 
-      const displayEmptyRow = emptyRender && emptyRender ? emptyRender() : <h4>{emptyMessage}</h4>;
-      return (
-        <>
-          <div className="text-center">{displayEmptyRow}</div>
-        </>
-      )
+      const displayEmptyRow =
+        emptyRender && emptyRender ? emptyRender() : <h4>{emptyMessage}</h4>;
+      return <div className="float-left mb-3">{displayEmptyRow}</div>;
     } catch (err) {
       return (
         <div className="text-center">
           <h4>{emptyMessage}</h4>
         </div>
-      )
+      );
     }
-  }
-
-  useEffect(() => {
-    setSelectedRows(rows.filter((row) => {
-      return selectedRowItems.includes(Number(row.id));
-    })
-    )
-  }, [rows])
-
-  useEffect(() => {
-    setSelectedRowIndexes([...selectedRowItems])
-  }, [selectedRowItems])
+  };
 
   const isAllSelected = () => {
     return allSelectedPages && allSelectedPages.length > 0 && allSelectedPages.includes(paginationProps.current_page);
@@ -273,95 +213,98 @@ export default function SimpleTable(props) {
   return (
     <>
       <NotificationContainer />
-      <div className={`table-projects table-responsive ${tableContainerClass}`}>
+      <div className={`table-projects custom-table table-responsive ${tableContainerClass}`}>
         {bulkActions && bulkActions.length > 0 && rows.length > 0 && (
-          <>
-            <div className={`mb-2 mt-2 bulk-action-apply d-flex ${dropdownContainerClass}`}>
-              <select
-                style={{ width: '150px' }}
-                className="form-control"
-                value={selectedAction}
-                onBlur={() => { }}
-                onChange={(e) => { setSelectedAction(e.target.value) }}
-              >
-                <option value="">Bulk Actions</option>
-                {bulkActions.map((action, index) => (
-                  <option value={index}>{action.actionTitle}</option>
-                ))}
-              </select>
+          <div
+            className={`bulk-option mb-2 mt-2 bulk-action-apply d-flex ${dropdownContainerClass}`}
+          >
+            <select
+              style={{ width: '150px' }}
+              className="form-control"
+              value={selectedAction}
+              // onBlur={() => { }}
+              onChange={(e) => {
+                setSelectedAction(e.target.value);
+              }}
+            >
+              <option value="">Bulk Actions</option>
+              {bulkActions.map((action, index) => (
+                <option key={index} value={index}>
+                  {action.actionTitle}
+                </option>
+              ))}
+            </select>
 
-              <Button
-                className="me-2"
-                onClick={() => {
-                  if (!selectedRowIndexes.length || !selectedAction) {
-                    swal({
-                      title: selectedRowIndexes.length && !selectedAction
-                        ? 'Please select atleast one action.'
-                        : 'Please select atleast one record.',
-                      icon: 'error',
-                      dangerMode: true,
-                      button: 'OK',
-                      closeOnClickOutside: false,
-                      allowOutsideClick: false,
-                    });
-                  }
-                  if (!selectedRowIndexes.length || !selectedAction) return;
-                  let msg = popupMessage.replace('{key}', bulkActions[selectedAction].actionTitle.toLowerCase())
+            <Button
+              className="me-2"
+              onClick={() => {
+                if (!selectedRowIndexes.length || !selectedAction) {
                   swal({
-
-                    title: msg,
-                    icon: "warning",
+                    title: selectedRowIndexes.length && !selectedAction
+                      ? 'Please select atleast one action.'
+                      : 'Please select atleast one record.',
+                    icon: 'error',
                     dangerMode: true,
-                    buttons: {
-                      cancel: {
-                        text: "Cancel",
-                        value: false,
-                        visible: true,
-                        closeModal: true
-                      },
-                      confirm: {
-                        text: "Proceed",
-                        value: true,
-                        visible: true,
-                        className: "",
-                        closeModal: true
-                      }
-                    },
+                    button: 'OK',
                     closeOnClickOutside: false,
                     allowOutsideClick: false,
-                  })
-                    .then(willAction => {
-                      if (willAction) {
-                        bulkActions[selectedAction].actionCallback(
-                          selectedRowIndexes,
-                          setAllSelected(false),
-                          setSelectedRows([]),
-                          setSelectedRowIndexes([]),
-                          setSelectedAction(''),
-                          setAllSelectedPages([]),
-                        );
-                      }
-                    });
-                }}
-              >
-                {bulkActionsLabel}
-              </Button>
-            </div>
-          </>
+                  });
+                }
+                if (!selectedRowIndexes.length || !selectedAction) return;
+                let msg = popupMessage.replace('{key}', bulkActions[selectedAction].actionTitle.toLowerCase())
+                swal({
+
+                  title: msg,
+                  icon: "warning",
+                  dangerMode: true,
+                  buttons: {
+                    cancel: {
+                      text: "Cancel",
+                      value: false,
+                      visible: true,
+                      closeModal: true
+                    },
+                    confirm: {
+                      text: "Proceed",
+                      value: true,
+                      visible: true,
+                      className: "",
+                      closeModal: true
+                    }
+                  },
+                  closeOnClickOutside: false,
+                  allowOutsideClick: false,
+                })
+                  .then(willAction => {
+                    if (willAction) {
+                      bulkActions[selectedAction].actionCallback(
+                        selectedRowIndexes,
+                        setAllSelected(false),
+                        setSelectedRows([]),
+                        setSelectedRowIndexes([]),
+                        setSelectedAction(''),
+                        setAllSelectedPages([]),
+                      );
+                    }
+                  });
+              }}
+            >
+              {bulkActionsLabel}
+            </Button>
+          </div>
         )}
         <table className={`table ${tableClass}`}>
-          {columns && columns.length > 0 && rows.length > 0 && (
-            <thead>
+          {columns && columns.length > 0 && (
+            <thead style={{ border: '2px solid #dee2e6' }}>
               <tr>
                 {showCheckbox && (
                   <th>
                     <div className="form-check">
                       <Form.Check
-                        id='chkAll'
-                        name='chkAll'
+                        id="chkAll"
+                        name="chkAll"
                         type="checkbox"
                         // className="form-check-input"
-                        // checked={allSelected}
                         checked={isAllSelected()}
                         onChange={(e) => {
                           onSelectHead(e.target.checked);
@@ -370,21 +313,35 @@ export default function SimpleTable(props) {
                     </div>
                   </th>
                 )}
-                {rows.length > 0 && columns && columns.map((column, columnIndex) => (
-                  <UserRestrictions permittedUsers={column.roleAccess || []} roleId={role || ''}>
-                    <DisplayViewComponent display={column.isDisplay !== undefined ? column.isDisplay : true}>
-                      <th scope="col" key={`column-${columnIndex}`}>
-                        <RenderColumn columnData={column} key={columnIndex} />
-                      </th>
-                    </DisplayViewComponent>
-                  </UserRestrictions>
-                ))}
+                {columns.length > 0 &&
+                  columns.map((column, columnIndex) => (
+                    <UserRestrictions
+                      permittedUsers={column.roleAccess || []}
+                      roleId={role || ''}
+                    >
+                      <DisplayViewComponent
+                        display={
+                          column.isDisplay !== undefined
+                            ? column.isDisplay
+                            : true
+                        }
+                      >
+                        <th
+                          scope="col"
+                          key={`column-${columnIndex}`}
+                          className="text-nowrap"
+                        >
+                          <RenderColumn columnData={column} key={columnIndex} />
+                        </th>
+                      </DisplayViewComponent>
+                    </UserRestrictions>
+                  ))}
               </tr>
             </thead>
           )}
           <tbody>
-            {rows && rows.length > 0 && rows.map((row, rowIndex) => (
-              <tr key={`row-${rowIndex}`} className={`trow ${row.rowClass || ''}`}>
+            {rows.map((row, rowIndex) => (
+              <tr key={`row-${rowIndex}`}>
                 {showCheckbox && (
                   <th>
                     <div className="form-check">
@@ -394,7 +351,7 @@ export default function SimpleTable(props) {
                         name={`chk${row.id}`}
                         value={row.id}
                         type="checkbox"
-                        checked={selectedRowIndexes.includes(row.id)}
+                        checked={selectedRowIndexes.includes(String(row.id))}
                         onChange={(e) => {
                           onSelectRow(e.target.checked, rowIndex);
                         }}
@@ -402,11 +359,26 @@ export default function SimpleTable(props) {
                     </div>
                   </th>
                 )}
-                {allColumnIds && allColumnIds.length > 0 && allColumnIds.map((rowDataId, columnIndex) => (
-                  <UserRestrictions permittedUsers={columns[columnIndex].roleAccess || []} roleId={role || ''}>
-                    <DisplayViewComponent display={columns[columnIndex].isDisplay !== undefined ? columns[columnIndex].isDisplay : true}>
-                      <td className={`tcol ${columns[columnIndex].classes || ''}`}>
-                        <RenderColumnData key={rowDataId} columnData={columns[columnIndex]} rowData={row} colIdx={columnIndex} rowIdx={rowIndex} />
+                {allColumnIds.map((rowDataId, columnIndex) => (
+                  <UserRestrictions
+                    permittedUsers={columns[columnIndex].roleAccess || []}
+                    roleId={role || ''}
+                  >
+                    <DisplayViewComponent
+                      display={
+                        columns[columnIndex].isDisplay !== undefined
+                          ? columns[columnIndex].isDisplay
+                          : true
+                      }
+                    >
+                      <td>
+                        <RenderColumnData
+                          key={rowDataId}
+                          columnData={columns[columnIndex]}
+                          rowData={row}
+                          colIdx={columnIndex}
+                          rowIdx={rowIndex}
+                        />
                       </td>
                     </DisplayViewComponent>
                   </UserRestrictions>
@@ -418,6 +390,7 @@ export default function SimpleTable(props) {
         <EmptyRecordRender />
       </div>
       {showPagination &&
+        rows.length > 0 &&
         paginationProps &&
         paginationProps.itemsPerPage < paginationProps.totalItems && (
           <Pagination {...paginationProps} />
@@ -425,3 +398,5 @@ export default function SimpleTable(props) {
     </>
   );
 }
+
+export default SimpleTable;
