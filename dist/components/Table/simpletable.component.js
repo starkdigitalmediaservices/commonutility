@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = SimpleTable;
+exports.default = void 0;
 
 require("core-js/modules/web.dom-collections.iterator.js");
 
@@ -75,7 +75,7 @@ const defaults = {
 // Add role access key to column to hide or show specific column based on role
 // Keep empty to show column to all user
 
-function SimpleTable(props) {
+const SimpleTable = props => {
   const {
     columns,
     rows,
@@ -97,24 +97,11 @@ function SimpleTable(props) {
   const [allSelected, setAllSelected] = (0, _react.useState)(false);
   const [selectedAction, setSelectedAction] = (0, _react.useState)('');
   const [selectedRows, setSelectedRows] = (0, _react.useState)(rows.filter(row => {
-    return selectedRowItems.includes(Number(row.id));
+    return selectedRowItems.includes(String(row.id));
   }));
   const [selectedRowIndexes, setSelectedRowIndexes] = (0, _react.useState)([...selectedRowItems]);
   const [allSelectedPages, setAllSelectedPages] = (0, _react.useState)([]);
-  const allColumnIds = columns.map(column => column.id); // const onSelectHead = (isChecked) => {
-  //   const selectedIndexes = [];
-  //   const selectedItems = rows.filter((row) => {
-  //     // eslint-disable-line
-  //     if (isChecked) selectedIndexes.push(Number(row.id));
-  //     return isChecked;
-  //   });
-  //   setSelectedRows([...selectedItems]);
-  //   setSelectedRowIndexes([...selectedIndexes]);
-  //   setAllSelected(isChecked);
-  //   if (onSelectRowsIndexes) {
-  //     onSelectRowsIndexes(selectedIndexes);
-  //   }
-  // };
+  const allColumnIds = columns.map(column => column.id);
 
   const onSelectHead = async isChecked => {
     let selectedIndexes = [...selectedRowIndexes];
@@ -154,26 +141,7 @@ function SimpleTable(props) {
         }
       }
     }
-  }; // const onSelectRow = (isChecked, rowIndex) => {
-  //   let selectedItems = [...selectedRows];
-  //   const selectedIndexes = [];
-  //   if (isChecked) {
-  //     selectedItems.push(rows[rowIndex]);
-  //   } else {
-  //     selectedItems = selectedItems.filter(j => Number(j.id) !== Number(rows[rowIndex].id));
-  //   }
-  //   const selectedCount = selectedItems.filter((item) => {
-  //     selectedIndexes.push(Number(item.id));
-  //     return item;
-  //   }).length;
-  //   setSelectedRows(selectedItems);
-  //   setAllSelected(selectedCount === rows.length);
-  //   setSelectedRowIndexes([...selectedIndexes]);
-  //   if (onSelectRowsIndexes) {
-  //     onSelectRowsIndexes(selectedIndexes);
-  //   }
-  // };
-
+  };
 
   const onSelectRow = async (isChecked, rowIndex) => {
     let selectedItems = [...selectedRows];
@@ -264,9 +232,9 @@ function SimpleTable(props) {
       } = props;
       if (rows.length > 0) return null;
       const displayEmptyRow = emptyRender && emptyRender ? emptyRender() : /*#__PURE__*/_react.default.createElement("h4", null, emptyMessage);
-      return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
-        className: "text-center"
-      }, displayEmptyRow));
+      return /*#__PURE__*/_react.default.createElement("div", {
+        className: "float-left mb-3"
+      }, displayEmptyRow);
     } catch (err) {
       return /*#__PURE__*/_react.default.createElement("div", {
         className: "text-center"
@@ -274,36 +242,28 @@ function SimpleTable(props) {
     }
   };
 
-  (0, _react.useEffect)(() => {
-    setSelectedRows(rows.filter(row => {
-      return selectedRowItems.includes(Number(row.id));
-    }));
-  }, [rows]);
-  (0, _react.useEffect)(() => {
-    setSelectedRowIndexes([...selectedRowItems]);
-  }, [selectedRowItems]);
-
   const isAllSelected = () => {
     return allSelectedPages && allSelectedPages.length > 0 && allSelectedPages.includes(paginationProps.current_page);
   };
 
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactNotifications.NotificationContainer, null), /*#__PURE__*/_react.default.createElement("div", {
-    className: "table-projects table-responsive ".concat(tableContainerClass)
-  }, bulkActions && bulkActions.length > 0 && rows.length > 0 && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
-    className: "mb-2 mt-2 bulk-action-apply d-flex ".concat(dropdownContainerClass)
+    className: "table-projects custom-table table-responsive ".concat(tableContainerClass)
+  }, bulkActions && bulkActions.length > 0 && rows.length > 0 && /*#__PURE__*/_react.default.createElement("div", {
+    className: "bulk-option mb-2 mt-2 bulk-action-apply d-flex ".concat(dropdownContainerClass)
   }, /*#__PURE__*/_react.default.createElement("select", {
     style: {
       width: '150px'
     },
     className: "form-control",
-    value: selectedAction,
-    onBlur: () => {},
+    value: selectedAction // onBlur={() => { }}
+    ,
     onChange: e => {
       setSelectedAction(e.target.value);
     }
   }, /*#__PURE__*/_react.default.createElement("option", {
     value: ""
   }, "Bulk Actions"), bulkActions.map((action, index) => /*#__PURE__*/_react.default.createElement("option", {
+    key: index,
     value: index
   }, action.actionTitle))), /*#__PURE__*/_react.default.createElement(_reactBootstrap.Button, {
     className: "me-2",
@@ -348,34 +308,37 @@ function SimpleTable(props) {
         }
       });
     }
-  }, bulkActionsLabel))), /*#__PURE__*/_react.default.createElement("table", {
+  }, bulkActionsLabel)), /*#__PURE__*/_react.default.createElement("table", {
     className: "table ".concat(tableClass)
-  }, columns && columns.length > 0 && rows.length > 0 && /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, showCheckbox && /*#__PURE__*/_react.default.createElement("th", null, /*#__PURE__*/_react.default.createElement("div", {
+  }, columns && columns.length > 0 && /*#__PURE__*/_react.default.createElement("thead", {
+    style: {
+      border: '2px solid #dee2e6'
+    }
+  }, /*#__PURE__*/_react.default.createElement("tr", null, showCheckbox && /*#__PURE__*/_react.default.createElement("th", null, /*#__PURE__*/_react.default.createElement("div", {
     className: "form-check"
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
     id: "chkAll",
     name: "chkAll",
     type: "checkbox" // className="form-check-input"
-    // checked={allSelected}
     ,
     checked: isAllSelected(),
     onChange: e => {
       onSelectHead(e.target.checked);
     }
-  }))), rows.length > 0 && columns && columns.map((column, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
+  }))), columns.length > 0 && columns.map((column, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
     permittedUsers: column.roleAccess || [],
     roleId: role || ''
   }, /*#__PURE__*/_react.default.createElement(DisplayViewComponent, {
     display: column.isDisplay !== undefined ? column.isDisplay : true
   }, /*#__PURE__*/_react.default.createElement("th", {
     scope: "col",
-    key: "column-".concat(columnIndex)
+    key: "column-".concat(columnIndex),
+    className: "text-nowrap"
   }, /*#__PURE__*/_react.default.createElement(RenderColumn, {
     columnData: column,
     key: columnIndex
-  }))))))), /*#__PURE__*/_react.default.createElement("tbody", null, rows && rows.length > 0 && rows.map((row, rowIndex) => /*#__PURE__*/_react.default.createElement("tr", {
-    key: "row-".concat(rowIndex),
-    className: "trow ".concat(row.rowClass || '')
+  }))))))), /*#__PURE__*/_react.default.createElement("tbody", null, rows.map((row, rowIndex) => /*#__PURE__*/_react.default.createElement("tr", {
+    key: "row-".concat(rowIndex)
   }, showCheckbox && /*#__PURE__*/_react.default.createElement("th", null, /*#__PURE__*/_react.default.createElement("div", {
     className: "form-check"
   }, /*#__PURE__*/_react.default.createElement(_reactBootstrap.Form.Check, {
@@ -384,22 +347,23 @@ function SimpleTable(props) {
     name: "chk".concat(row.id),
     value: row.id,
     type: "checkbox",
-    checked: selectedRowIndexes.includes(row.id),
+    checked: selectedRowIndexes.includes(String(row.id)),
     onChange: e => {
       onSelectRow(e.target.checked, rowIndex);
     }
-  }))), allColumnIds && allColumnIds.length > 0 && allColumnIds.map((rowDataId, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
+  }))), allColumnIds.map((rowDataId, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
     permittedUsers: columns[columnIndex].roleAccess || [],
     roleId: role || ''
   }, /*#__PURE__*/_react.default.createElement(DisplayViewComponent, {
     display: columns[columnIndex].isDisplay !== undefined ? columns[columnIndex].isDisplay : true
-  }, /*#__PURE__*/_react.default.createElement("td", {
-    className: "tcol ".concat(columns[columnIndex].classes || '')
-  }, /*#__PURE__*/_react.default.createElement(RenderColumnData, {
+  }, /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement(RenderColumnData, {
     key: rowDataId,
     columnData: columns[columnIndex],
     rowData: row,
     colIdx: columnIndex,
     rowIdx: rowIndex
-  }))))))))), /*#__PURE__*/_react.default.createElement(EmptyRecordRender, null)), showPagination && paginationProps && paginationProps.itemsPerPage < paginationProps.totalItems && /*#__PURE__*/_react.default.createElement(_pagination.default, paginationProps));
-}
+  }))))))))), /*#__PURE__*/_react.default.createElement(EmptyRecordRender, null)), showPagination && rows.length > 0 && paginationProps && paginationProps.itemsPerPage < paginationProps.totalItems && /*#__PURE__*/_react.default.createElement(_pagination.default, paginationProps));
+};
+
+var _default = SimpleTable;
+exports.default = _default;
