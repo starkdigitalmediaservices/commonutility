@@ -9,17 +9,19 @@ require("core-js/modules/web.dom-collections.iterator.js");
 
 require("core-js/modules/es.string.includes.js");
 
+require("core-js/modules/es.promise.js");
+
 require("core-js/modules/es.string.replace.js");
 
 var _react = _interopRequireWildcard(require("react"));
 
 var _reactBootstrap = require("react-bootstrap");
 
-var _sweetalert = _interopRequireDefault(require("sweetalert"));
-
 var _reactNotifications = require("react-notifications");
 
 require("react-notifications/lib/notifications.css");
+
+var _sweetalert = _interopRequireDefault(require("sweetalert"));
 
 var _pagination = _interopRequireDefault(require("../Pagination/pagination.component"));
 
@@ -98,44 +100,125 @@ function SimpleTable(props) {
     return selectedRowItems.includes(Number(row.id));
   }));
   const [selectedRowIndexes, setSelectedRowIndexes] = (0, _react.useState)([...selectedRowItems]);
-  const allColumnIds = columns.map(column => column.id);
+  const [allSelectedPages, setAllSelectedPages] = (0, _react.useState)([]);
+  const allColumnIds = columns.map(column => column.id); // const onSelectHead = (isChecked) => {
+  //   const selectedIndexes = [];
+  //   const selectedItems = rows.filter((row) => {
+  //     // eslint-disable-line
+  //     if (isChecked) selectedIndexes.push(Number(row.id));
+  //     return isChecked;
+  //   });
+  //   setSelectedRows([...selectedItems]);
+  //   setSelectedRowIndexes([...selectedIndexes]);
+  //   setAllSelected(isChecked);
+  //   if (onSelectRowsIndexes) {
+  //     onSelectRowsIndexes(selectedIndexes);
+  //   }
+  // };
 
-  const onSelectHead = isChecked => {
-    const selectedIndexes = [];
-    const selectedItems = rows.filter(row => {
-      // eslint-disable-line
-      if (isChecked) selectedIndexes.push(Number(row.id));
-      return isChecked;
-    });
-    setSelectedRows([...selectedItems]);
-    setSelectedRowIndexes([...selectedIndexes]);
-    setAllSelected(isChecked);
-
-    if (onSelectRowsIndexes) {
-      onSelectRowsIndexes(selectedIndexes);
-    }
-  };
-
-  const onSelectRow = (isChecked, rowIndex) => {
+  const onSelectHead = async isChecked => {
+    let selectedIndexes = [...selectedRowIndexes];
+    setSelectedRowIndexes([]);
     let selectedItems = [...selectedRows];
-    const selectedIndexes = [];
 
-    if (isChecked) {
-      selectedItems.push(rows[rowIndex]);
-    } else {
-      selectedItems = selectedItems.filter(j => Number(j.id) !== Number(rows[rowIndex].id));
+    for (let i = 0, n = rows.length; i < n; i++) {
+      const findRowIndex = await selectedItems.findIndex(e => e.id === rows[i].id);
+
+      if (isChecked && findRowIndex === -1) {
+        selectedItems.push(rows[i]);
+        selectedIndexes.push(String(rows[i].id));
+      } else if (findRowIndex > -1 && !isChecked) {
+        selectedItems.splice(findRowIndex, 1);
+        selectedIndexes.splice(findRowIndex, 1);
+      }
+
+      if (i + 1 === n) {
+        setSelectedRows([...selectedItems]);
+        setSelectedRowIndexes([...selectedIndexes]);
+        setAllSelected(isChecked);
+        const selectedPages = [...allSelectedPages];
+        setAllSelectedPages([]);
+        const currentPage = paginationProps.current_page;
+        const isCurrentPageAddedAlready = await allSelectedPages.findIndex(e => e === currentPage);
+
+        if (isChecked && isCurrentPageAddedAlready === -1) {
+          selectedPages.push(currentPage);
+        } else if (!isChecked && isCurrentPageAddedAlready !== -1) {
+          selectedPages.splice(isCurrentPageAddedAlready, 1);
+        }
+
+        setAllSelectedPages([...selectedPages]);
+
+        if (onSelectRowsIndexes) {
+          onSelectRowsIndexes(selectedIndexes);
+        }
+      }
     }
+  }; // const onSelectRow = (isChecked, rowIndex) => {
+  //   let selectedItems = [...selectedRows];
+  //   const selectedIndexes = [];
+  //   if (isChecked) {
+  //     selectedItems.push(rows[rowIndex]);
+  //   } else {
+  //     selectedItems = selectedItems.filter(j => Number(j.id) !== Number(rows[rowIndex].id));
+  //   }
+  //   const selectedCount = selectedItems.filter((item) => {
+  //     selectedIndexes.push(Number(item.id));
+  //     return item;
+  //   }).length;
+  //   setSelectedRows(selectedItems);
+  //   setAllSelected(selectedCount === rows.length);
+  //   setSelectedRowIndexes([...selectedIndexes]);
+  //   if (onSelectRowsIndexes) {
+  //     onSelectRowsIndexes(selectedIndexes);
+  //   }
+  // };
 
-    const selectedCount = selectedItems.filter(item => {
-      selectedIndexes.push(Number(item.id));
-      return item;
-    }).length;
-    setSelectedRows(selectedItems);
-    setAllSelected(selectedCount === rows.length);
-    setSelectedRowIndexes([...selectedIndexes]);
 
-    if (onSelectRowsIndexes) {
-      onSelectRowsIndexes(selectedIndexes);
+  const onSelectRow = async (isChecked, rowIndex) => {
+    let selectedItems = [...selectedRows];
+    let selectedIndexes = [...selectedRowIndexes];
+    const rowId = rows[rowIndex].id;
+
+    for (let i = 0, n = rows.length; i < n; i++) {
+      if (rowId === rows[i].id) {
+        const findRowIndex = await selectedItems.findIndex(e => e.id === rows[i].id);
+
+        if (isChecked && findRowIndex === -1) {
+          selectedItems.push(rows[i]);
+          selectedIndexes.push(String(rows[i].id));
+        } else if (findRowIndex > -1 && !isChecked) {
+          selectedItems.splice(findRowIndex, 1);
+          selectedIndexes.splice(findRowIndex, 1);
+        }
+      }
+
+      if (i + 1 === n) {
+        let selectedCount = 0;
+        await rows.forEach(row => {
+          if (selectedIndexes.includes(String(row.id))) {
+            selectedCount += 1;
+          }
+        });
+        setSelectedRows([...selectedItems]);
+        setAllSelected(selectedCount === rows.length);
+        setSelectedRowIndexes([...selectedIndexes]);
+        const selectedPages = [...allSelectedPages];
+        const currentPage = paginationProps.current_page;
+        const isCurrentPageAddedAlready = await allSelectedPages.findIndex(e => e === currentPage);
+
+        if (selectedCount === rows.length && isCurrentPageAddedAlready === -1) {
+          selectedPages.push(currentPage);
+        } else if (selectedCount !== rows.length && isCurrentPageAddedAlready !== -1) {
+          selectedPages.splice(isCurrentPageAddedAlready, 1);
+        }
+
+        setAllSelectedPages([...selectedPages]);
+
+        if (onSelectRowsIndexes) {
+          onSelectRowsIndexes(selectedIndexes);
+        }
+      }
     }
   };
 
@@ -199,6 +282,11 @@ function SimpleTable(props) {
   (0, _react.useEffect)(() => {
     setSelectedRowIndexes([...selectedRowItems]);
   }, [selectedRowItems]);
+
+  const isAllSelected = () => {
+    return allSelectedPages && allSelectedPages.length > 0 && allSelectedPages.includes(paginationProps.current_page);
+  };
+
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_reactNotifications.NotificationContainer, null), /*#__PURE__*/_react.default.createElement("div", {
     className: "table-projects table-responsive ".concat(tableContainerClass)
   }, bulkActions && bulkActions.length > 0 && rows.length > 0 && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
@@ -256,7 +344,7 @@ function SimpleTable(props) {
         allowOutsideClick: false
       }).then(willAction => {
         if (willAction) {
-          bulkActions[selectedAction].actionCallback(selectedRowIndexes, setAllSelected(false), setSelectedRows([]), setSelectedRowIndexes([]), setSelectedAction(''));
+          bulkActions[selectedAction].actionCallback(selectedRowIndexes, setAllSelected(false), setSelectedRows([]), setSelectedRowIndexes([]), setSelectedAction(''), setAllSelectedPages([]));
         }
       });
     }
@@ -268,12 +356,13 @@ function SimpleTable(props) {
     id: "chkAll",
     name: "chkAll",
     type: "checkbox" // className="form-check-input"
+    // checked={allSelected}
     ,
-    checked: allSelected,
+    checked: isAllSelected(),
     onChange: e => {
       onSelectHead(e.target.checked);
     }
-  }))), rows.length > 0 && columns.map((column, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
+  }))), rows.length > 0 && columns && columns.map((column, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
     permittedUsers: column.roleAccess || [],
     roleId: role || ''
   }, /*#__PURE__*/_react.default.createElement(DisplayViewComponent, {
@@ -284,7 +373,7 @@ function SimpleTable(props) {
   }, /*#__PURE__*/_react.default.createElement(RenderColumn, {
     columnData: column,
     key: columnIndex
-  }))))))), /*#__PURE__*/_react.default.createElement("tbody", null, rows.map((row, rowIndex) => /*#__PURE__*/_react.default.createElement("tr", {
+  }))))))), /*#__PURE__*/_react.default.createElement("tbody", null, rows && rows.length > 0 && rows.map((row, rowIndex) => /*#__PURE__*/_react.default.createElement("tr", {
     key: "row-".concat(rowIndex),
     className: "trow ".concat(row.rowClass || '')
   }, showCheckbox && /*#__PURE__*/_react.default.createElement("th", null, /*#__PURE__*/_react.default.createElement("div", {
@@ -299,7 +388,7 @@ function SimpleTable(props) {
     onChange: e => {
       onSelectRow(e.target.checked, rowIndex);
     }
-  }))), allColumnIds.map((rowDataId, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
+  }))), allColumnIds && allColumnIds.length > 0 && allColumnIds.map((rowDataId, columnIndex) => /*#__PURE__*/_react.default.createElement(_userrestrictions.default, {
     permittedUsers: columns[columnIndex].roleAccess || [],
     roleId: role || ''
   }, /*#__PURE__*/_react.default.createElement(DisplayViewComponent, {
