@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import swal from 'sweetalert';
 import {
-  NotificationContainer,
-  // NotificationManager,
+  NotificationContainer
 } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
+import swal from 'sweetalert';
 import Pagination from '../Pagination/pagination.component';
 import UserRestrictions from '../UserRestrictions/userrestrictions.component';
 
@@ -23,7 +22,7 @@ const defaults = {
   role: '',
   emptyMessage: 'No record found.',
   bulkActionsLabel: 'Apply',
-  popupMessage:'Are you sure that you want to {key}?'
+  popupMessage: 'Are you sure that you want to {key}?'
 };
 
 // Columns structure
@@ -83,40 +82,116 @@ export default function SimpleTable(props) {
   const [selectedRowIndexes, setSelectedRowIndexes] = useState([
     ...selectedRowItems,
   ]);
+  const [allSelectedPages, setAllSelectedPages] = useState([]);
   const allColumnIds = columns.map((column) => column.id);
 
-  const onSelectHead = (isChecked) => {
-    const selectedIndexes = [];
-    const selectedItems = rows.filter((row) => {
-      // eslint-disable-line
-      if (isChecked) selectedIndexes.push(Number(row.id));
-      return isChecked;
-    });
-    setSelectedRows([...selectedItems]);
-    setSelectedRowIndexes([...selectedIndexes]);
-    setAllSelected(isChecked);
-    if (onSelectRowsIndexes) {
-      onSelectRowsIndexes(selectedIndexes);
+  // const onSelectHead = (isChecked) => {
+  //   const selectedIndexes = [];
+  //   const selectedItems = rows.filter((row) => {
+  //     // eslint-disable-line
+  //     if (isChecked) selectedIndexes.push(Number(row.id));
+  //     return isChecked;
+  //   });
+  //   setSelectedRows([...selectedItems]);
+  //   setSelectedRowIndexes([...selectedIndexes]);
+  //   setAllSelected(isChecked);
+  //   if (onSelectRowsIndexes) {
+  //     onSelectRowsIndexes(selectedIndexes);
+  //   }
+  // };
+
+  const onSelectHead = async (isChecked) => {
+    let selectedIndexes = [...selectedRowIndexes];
+    setSelectedRowIndexes([]);
+    let selectedItems = [...selectedRows];
+    for (let i = 0, n = rows.length; i < n; i++) {
+      const findRowIndex = await selectedItems.findIndex(e => e.id === rows[i].id);
+      if (isChecked && findRowIndex === -1) {
+        selectedItems.push(rows[i]);
+        selectedIndexes.push(String(rows[i].id));
+      } else if (findRowIndex > -1 && !isChecked) {
+        selectedItems.splice(findRowIndex, 1);
+        selectedIndexes.splice(findRowIndex, 1);
+      }
+      if (i + 1 === n) {
+        setSelectedRows([...selectedItems]);
+        setSelectedRowIndexes([...selectedIndexes]);
+        setAllSelected(isChecked);
+        const selectedPages = [...allSelectedPages];
+        setAllSelectedPages([]);
+        const currentPage = paginationProps.current_page;
+        const isCurrentPageAddedAlready = await allSelectedPages.findIndex(e => e === currentPage);
+        if (isChecked && isCurrentPageAddedAlready === -1) {
+          selectedPages.push(currentPage);
+        } else if (!isChecked && isCurrentPageAddedAlready !== -1) {
+          selectedPages.splice(isCurrentPageAddedAlready, 1);
+        }
+        setAllSelectedPages([...selectedPages]);
+        if (onSelectRowsIndexes) {
+          onSelectRowsIndexes(selectedIndexes);
+        }
+      }
     }
   };
 
-  const onSelectRow = (isChecked, rowIndex) => {
+  // const onSelectRow = (isChecked, rowIndex) => {
+  //   let selectedItems = [...selectedRows];
+  //   const selectedIndexes = [];
+  //   if (isChecked) {
+  //     selectedItems.push(rows[rowIndex]);
+  //   } else {
+  //     selectedItems = selectedItems.filter(j => Number(j.id) !== Number(rows[rowIndex].id));
+  //   }
+  //   const selectedCount = selectedItems.filter((item) => {
+  //     selectedIndexes.push(Number(item.id));
+  //     return item;
+  //   }).length;
+  //   setSelectedRows(selectedItems);
+  //   setAllSelected(selectedCount === rows.length);
+  //   setSelectedRowIndexes([...selectedIndexes]);
+  //   if (onSelectRowsIndexes) {
+  //     onSelectRowsIndexes(selectedIndexes);
+  //   }
+  // };
+
+  const onSelectRow = async (isChecked, rowIndex) => {
     let selectedItems = [...selectedRows];
-    const selectedIndexes = [];
-    if (isChecked) {
-      selectedItems.push(rows[rowIndex]);
-    } else {
-      selectedItems = selectedItems.filter(j => Number(j.id) !== Number(rows[rowIndex].id));
-    }
-    const selectedCount = selectedItems.filter((item) => {
-      selectedIndexes.push(Number(item.id));
-      return item;
-    }).length;
-    setSelectedRows(selectedItems);
-    setAllSelected(selectedCount === rows.length);
-    setSelectedRowIndexes([...selectedIndexes]);
-    if (onSelectRowsIndexes) {
-      onSelectRowsIndexes(selectedIndexes);
+    let selectedIndexes = [...selectedRowIndexes];
+    const rowId = rows[rowIndex].id;
+    for (let i = 0, n = rows.length; i < n; i++) {
+      if (rowId === rows[i].id) {
+        const findRowIndex = await selectedItems.findIndex(e => e.id === rows[i].id);
+        if (isChecked && findRowIndex === -1) {
+          selectedItems.push(rows[i]);
+          selectedIndexes.push(String(rows[i].id));
+        } else if (findRowIndex > -1 && !isChecked) {
+          selectedItems.splice(findRowIndex, 1);
+          selectedIndexes.splice(findRowIndex, 1);
+        }
+      }
+      if (i + 1 === n) {
+        let selectedCount = 0;
+        await rows.forEach((row) => {
+          if (selectedIndexes.includes(String(row.id))) {
+            selectedCount += 1;
+          }
+        });
+        setSelectedRows([...selectedItems]);
+        setAllSelected(selectedCount === rows.length);
+        setSelectedRowIndexes([...selectedIndexes]);
+        const selectedPages = [...allSelectedPages];
+        const currentPage = paginationProps.current_page;
+        const isCurrentPageAddedAlready = await allSelectedPages.findIndex(e => e === currentPage);
+        if (selectedCount === rows.length && isCurrentPageAddedAlready === -1) {
+          selectedPages.push(currentPage);
+        } else if (selectedCount !== rows.length && isCurrentPageAddedAlready !== -1) {
+          selectedPages.splice(isCurrentPageAddedAlready, 1);
+        }
+        setAllSelectedPages([...selectedPages]);
+        if (onSelectRowsIndexes) {
+          onSelectRowsIndexes(selectedIndexes);
+        }
+      }
     }
   };
 
@@ -181,15 +256,19 @@ export default function SimpleTable(props) {
   }
 
   useEffect(() => {
-    setSelectedRows(  rows.filter((row) => {
-         return selectedRowItems.includes(Number(row.id));
+    setSelectedRows(rows.filter((row) => {
+      return selectedRowItems.includes(Number(row.id));
     })
-  )
+    )
   }, [rows])
 
   useEffect(() => {
     setSelectedRowIndexes([...selectedRowItems])
   }, [selectedRowItems])
+
+  const isAllSelected = () => {
+    return allSelectedPages && allSelectedPages.length > 0 && allSelectedPages.includes(paginationProps.current_page);
+  }
 
   return (
     <>
@@ -227,7 +306,7 @@ export default function SimpleTable(props) {
                     });
                   }
                   if (!selectedRowIndexes.length || !selectedAction) return;
-                  let msg = popupMessage.replace('{key}',bulkActions[selectedAction].actionTitle.toLowerCase())
+                  let msg = popupMessage.replace('{key}', bulkActions[selectedAction].actionTitle.toLowerCase())
                   swal({
 
                     title: msg,
@@ -258,7 +337,8 @@ export default function SimpleTable(props) {
                           setAllSelected(false),
                           setSelectedRows([]),
                           setSelectedRowIndexes([]),
-                          setSelectedAction('')
+                          setSelectedAction(''),
+                          setAllSelectedPages([]),
                         );
                       }
                     });
@@ -281,7 +361,8 @@ export default function SimpleTable(props) {
                         name='chkAll'
                         type="checkbox"
                         // className="form-check-input"
-                        checked={allSelected}
+                        // checked={allSelected}
+                        checked={isAllSelected()}
                         onChange={(e) => {
                           onSelectHead(e.target.checked);
                         }}
@@ -289,7 +370,7 @@ export default function SimpleTable(props) {
                     </div>
                   </th>
                 )}
-                {rows.length > 0 && columns.map((column, columnIndex) => (
+                {rows.length > 0 && columns && columns.map((column, columnIndex) => (
                   <UserRestrictions permittedUsers={column.roleAccess || []} roleId={role || ''}>
                     <DisplayViewComponent display={column.isDisplay !== undefined ? column.isDisplay : true}>
                       <th scope="col" key={`column-${columnIndex}`}>
@@ -302,7 +383,7 @@ export default function SimpleTable(props) {
             </thead>
           )}
           <tbody>
-            {rows.map((row, rowIndex) => (
+            {rows && rows.length > 0 && rows.map((row, rowIndex) => (
               <tr key={`row-${rowIndex}`} className={`trow ${row.rowClass || ''}`}>
                 {showCheckbox && (
                   <th>
@@ -321,7 +402,7 @@ export default function SimpleTable(props) {
                     </div>
                   </th>
                 )}
-                {allColumnIds.map((rowDataId, columnIndex) => (
+                {allColumnIds && allColumnIds.length > 0 && allColumnIds.map((rowDataId, columnIndex) => (
                   <UserRestrictions permittedUsers={columns[columnIndex].roleAccess || []} roleId={role || ''}>
                     <DisplayViewComponent display={columns[columnIndex].isDisplay !== undefined ? columns[columnIndex].isDisplay : true}>
                       <td className={`tcol ${columns[columnIndex].classes || ''}`}>
