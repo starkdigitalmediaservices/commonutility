@@ -12,6 +12,9 @@ Create customizable datatable
 npm i stark-custom-datatable
 ```
 
+## Demo
+
+![alt text](https://github.com/starkdigitalmediaservices/commonutility/blob/master/public/logo512.png?raw=true)
 
 ## Usage
 
@@ -115,6 +118,7 @@ render() {
 ### paginationProps config
 * totalItems (required:Number) - total count of record for pagination
 * itemsPerPage (required:Number) - to dispay no of record per page
+* activePage (required:Number) - to check current page number
 * onPageChange (optional: callback) - to get current page selected
 
 ### dependencies package
