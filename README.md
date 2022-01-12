@@ -78,6 +78,7 @@ render() {
         paginationProps={{
           totalItems: 5,
           itemsPerPage: 5,
+          activePage: 1, //currentPage
           onPageChange:{(changedPage) => {
             console.log(changedPage);
           }}

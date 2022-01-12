@@ -105,7 +105,7 @@ const SimpleTable = (props) => {
         setAllSelected(isChecked);
         const selectedPages = [...allSelectedPages];
         setAllSelectedPages([]);
-        const currentPage = paginationProps.current_page;
+        const currentPage = paginationProps.activePage;
         const isCurrentPageAddedAlready = await allSelectedPages.findIndex(e => e === currentPage);
         if (isChecked && isCurrentPageAddedAlready === -1) {
           selectedPages.push(currentPage);
@@ -146,7 +146,7 @@ const SimpleTable = (props) => {
         setAllSelected(selectedCount === rows.length);
         setSelectedRowIndexes([...selectedIndexes]);
         const selectedPages = [...allSelectedPages];
-        const currentPage = paginationProps.current_page;
+        const currentPage = paginationProps.activePage;
         const isCurrentPageAddedAlready = await allSelectedPages.findIndex(e => e === currentPage);
         if (selectedCount === rows.length && isCurrentPageAddedAlready === -1) {
           selectedPages.push(currentPage);
@@ -207,7 +207,7 @@ const SimpleTable = (props) => {
   };
 
   const isAllSelected = () => {
-    return allSelectedPages && allSelectedPages.length > 0 && allSelectedPages.includes(paginationProps.current_page);
+    return allSelectedPages && allSelectedPages.length > 0 && allSelectedPages.includes(paginationProps.activePage);
   }
 
   return (
