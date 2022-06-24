@@ -2,12 +2,6 @@ import './App.css';
 import SimpleTable from './lib/components/Table/simpletable.component';
 
 function App() {
-  const rowData = [
-    { id: 1, name: 'Sample name', email: 'john.doe@example.com' },
-    { id: 2, name: 'Sample name', email: 'john.doe@example.com' },
-    { id: 3, name: 'Sample name', email: 'john.doe@example.com' },
-    { id: 4, name: 'Sample name', email: 'john.doe@example.com' },
-  ]
   return (
     <div className="App">
       <h1>React Datatable demo</h1>
