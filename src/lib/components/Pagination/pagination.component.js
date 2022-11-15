@@ -1,5 +1,5 @@
-import React from 'react';
-import PaginationComponent from 'react-js-pagination';
+import React from "react";
+import PaginationComponent from "react-js-pagination";
 
 const defaults = {
   activePage: 1,
@@ -14,6 +14,12 @@ export default function Pagination(props) {
     itemsPerPage,
     totalItems,
     onPageChange,
+    hideDisabled,
+    hideFirstLastPages,
+    firstPageText,
+    lastPageText,
+    pageRangeDisplayed,
+    hideNavigation,
   } = { ...defaults, ...props };
   return (
     <>
@@ -27,8 +33,12 @@ export default function Pagination(props) {
           }}
           itemClass="page-item"
           linkClass="page-link"
-          hideFirstLastPages
-          hideDisabled
+          hideFirstLastPages={hideFirstLastPages}
+          hideDisabled={hideDisabled}
+          firstPageText={firstPageText}
+          pageRangeDisplayed={pageRangeDisplayed}
+          lastPageText={lastPageText}
+          hideNavigation={hideNavigation}
         />
       </nav>
     </>
